@@ -4,7 +4,7 @@
            placeholder = "What needs to be done"
            v-model="newTodo" @keyup.enter="addTodo">
 
-    <div v-for="(item, index) in todoList" :key="item.id" class="todo-item">
+    <div v-for="(item, index) in todosFiltered" :key="item.id" class="todo-item">
       <input type="checkbox" v-model="item.completed">
       <div v-if = "!item.editable" :class="{completed: item.completed}" class="text-item">
         {{ item.title }}
@@ -28,6 +28,18 @@
       </div>
       <div>{{remaining}} items left</div>
     </div>
+
+    <div class="extra-container">
+      <div>
+        <button :class="{ active: filter == 'all'}" @click="filter = 'all'">All</button>
+        <button :class="{ active: filter == 'active'}" @click="filter = 'active'">Active</button>
+        <button :class="{ active: filter == 'completed'}" @click="filter = 'completed'">Completed</button>
+      </div>
+
+      <div>
+        Clear Completed
+      </div>
+    </div>
   </div>
 </template>
 
@@ -37,6 +49,7 @@
     data () {
       return {
         newTodo: '',
+        filter: 'all',
         nextTodoId: 3,
         cached:[], /*закешированные значения перед редактированием*/
         todoList: [
@@ -114,6 +127,16 @@
       },
       anyRemaining() {
         return this.remaining != 0
+      },
+      todosFiltered() {
+        if (this.filter == 'all') {
+          return this.todoList
+        } else if (this.filter == 'active') {
+            return this.todoList.filter(todo => !todo.completed)
+        } else if (this.filter == 'completed') {
+          return this.todoList.filter(todo => todo.completed)
+        }
+        return this.todoList;
       }
     },
     directives: {
@@ -179,6 +202,9 @@
     font-size: 12px;
     padding-top: 14px;
     margin-bottom: 14px;
+    color: #42b983;
+  }
+  button.active {
     color: #42b983;
   }
 </style>
