@@ -37,7 +37,7 @@
       </div>
 
       <div>
-        Clear Completed
+        <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
       </div>
     </div>
   </div>
@@ -119,6 +119,11 @@
 
       checkAllTodos() {
         this.todoList.forEach(item => item.completed = event.target.checked)
+      },
+
+      clearCompleted() {
+        //удалить посещенные
+        this.todoList = this.todoList.filter(todo => !todo.completed);
       }
     },
     computed: {
@@ -137,6 +142,9 @@
           return this.todoList.filter(todo => todo.completed)
         }
         return this.todoList;
+      },
+      showClearCompletedBtn() {
+        return this.todoList.filter(todo => todo.completed).length > 0
       }
     },
     directives: {
