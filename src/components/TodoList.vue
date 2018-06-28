@@ -37,7 +37,9 @@
       </div>
 
       <div>
-        <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
+        <transition name="fade">
+          <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
+        </transition>
       </div>
     </div>
   </div>
@@ -214,5 +216,11 @@
   }
   button.active {
     color: #42b983;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>
