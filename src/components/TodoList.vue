@@ -4,24 +4,14 @@
            placeholder = "What needs to be done"
            v-model="newTodo" @keyup.enter="addTodo">
 
-    <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-      <div v-for="(item, index) in todosFiltered" :key="item.id" class="todo-item">
-        <input type="checkbox" v-model="item.completed">
-        <div v-if = "!item.editable" :class="{completed: item.completed}" class="text-item">
-          {{ item.title }}
-        </div>
-        <div v-if="item.editable" class="text-item">
-          <input type="text" v-model="item.title" v-focus class="edit-input"
-                 @keyup.enter = "toggleEditableTodo(index)"
-                 @keyup.esc="cancelEdit(item, index)">
-        </div>
-        <div :class ="{disactive: item.completed}" class="edit-item" @click = "toggleEditableTodo(index)">
-          &#9998;
-        </div>
-        <div :class ="{disactive: item.completed}" class="remove-item" @click = "removeTodo(index)">
-          &times
-        </div>
-      </div>
+    <transition-group name="fade" enter-active-class="animated fadeInUp">
+      <todo-item v-for ="(item, index) in todosFiltered"
+                 :key = "item.id"
+                 :item = "item"
+                 :index = "index"
+                 :checkAll = "!anyRemaining"
+                 @removedTodo = "removeTodo"
+                 @completedTodo="completeTodo"/>
     </transition-group>
 
     <div class="extra-container">
@@ -48,14 +38,19 @@
 </template>
 
 <script>
+  import TodoItem from './TodoItem.vue'
+
   export default {
     name: 'todo-list',
+    components: {
+      TodoItem
+    },
     data () {
       return {
         newTodo: '',
         filter: 'all',
         nextTodoId: 3,
-        cached:[], /*закешированные значения перед редактированием*/
+        checkAll: false,
         todoList: [
           {
             'id': 1,
@@ -74,7 +69,7 @@
     },
     methods:  {
       addTodo() {
-        if (this.isEmpty(this.newTodo)) {
+        if (this.newTodo.trim() == '') {
           return;
         }
 
@@ -92,37 +87,16 @@
         if (this.todoList[index].completed) {
           return;
         }
-
         this.todoList.splice(index, 1);
       },
 
-      toggleEditableTodo(index) {
-        const current = this.todoList[index];
-
-        if (current.completed) {
-          return;
-        }
-
-        if (!current.editable) {
-          this.cached[index] = current.title;
-          //закончили редактировать и получили пустое значение
-        } else if (this.isEmpty(current.title)) {
-          current.title = this.cached[index];
-        }
-        current.editable = !current.editable
-      },
-
-      cancelEdit(todo, index) {
-        todo.editable = false;
-        todo.title = this.cached[index];
-      },
-
-      isEmpty(value) {
-        return value.trim() == ''
+      completeTodo(data) {
+        const {index, value} = data;
+        this.todoList[index].completed = value;
       },
 
       checkAllTodos() {
-        this.todoList.forEach(item => item.completed = event.target.checked)
+        this.todoList.forEach(item => item.completed = event.target.checked);
       },
 
       clearCompleted() {
@@ -147,15 +121,9 @@
         }
         return this.todoList;
       },
+
       showClearCompletedBtn() {
         return this.todoList.filter(todo => todo.completed).length > 0
-      }
-    },
-    directives: {
-      focus: {
-        inserted: function (el) {
-          el.focus()
-        }
       }
     }
   }
