@@ -4,23 +4,25 @@
            placeholder = "What needs to be done"
            v-model="newTodo" @keyup.enter="addTodo">
 
-    <div v-for="(item, index) in todosFiltered" :key="item.id" class="todo-item">
-      <input type="checkbox" v-model="item.completed">
-      <div v-if = "!item.editable" :class="{completed: item.completed}" class="text-item">
-        {{ item.title }}
+    <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
+      <div v-for="(item, index) in todosFiltered" :key="item.id" class="todo-item">
+        <input type="checkbox" v-model="item.completed">
+        <div v-if = "!item.editable" :class="{completed: item.completed}" class="text-item">
+          {{ item.title }}
+        </div>
+        <div v-if="item.editable" class="text-item">
+          <input type="text" v-model="item.title" v-focus class="edit-input"
+                 @keyup.enter = "toggleEditableTodo(index)"
+                 @keyup.esc="cancelEdit(item, index)">
+        </div>
+        <div :class ="{disactive: item.completed}" class="edit-item" @click = "toggleEditableTodo(index)">
+          &#9998;
+        </div>
+        <div :class ="{disactive: item.completed}" class="remove-item" @click = "removeTodo(index)">
+          &times
+        </div>
       </div>
-      <div v-if="item.editable" class="text-item">
-        <input type="text" v-model="item.title" v-focus class="edit-input"
-               @keyup.enter = "toggleEditableTodo(index)"
-               @keyup.esc="cancelEdit(item, index)">
-      </div>
-      <div :class ="{disactive: item.completed}" class="edit-item" @click = "toggleEditableTodo(index)">
-        &#9998;
-      </div>
-      <div :class ="{disactive: item.completed}" class="remove-item" @click = "removeTodo(index)">
-        &times
-      </div>
-    </div>
+    </transition-group>
 
     <div class="extra-container">
       <div>
@@ -37,7 +39,7 @@
       </div>
 
       <div>
-        <transition name="fade">
+        <transition name = "fade">
           <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
         </transition>
       </div>
