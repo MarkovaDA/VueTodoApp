@@ -9,23 +9,21 @@
                  :key = "item.id"
                  :item = "item"
                  :index = "index"
-                 :checkAll = "!anyRemaining"
-                 @removedTodo = "removeTodo"
-                 @completedTodo="completeTodo"/>
+                 :checkAll = "!anyRemaining"/>
     </transition-group>
 
     <div class="extra-container">
       <div>
         <label><input type="checkbox" :checked ="!anyRemaining" @change="checkAllTodos">Check All</label>
       </div>
-      <div>{{remaining}} items left</div>
+      <todo-items-remaining :remaining="remaining"></todo-items-remaining>
     </div>
 
     <div class="extra-container">
       <div>
-        <button :class="{ active: filter == 'all'}" @click="filter = 'all'">All</button>
-        <button :class="{ active: filter == 'active'}" @click="filter = 'active'">Active</button>
-        <button :class="{ active: filter == 'completed'}" @click="filter = 'completed'">Completed</button>
+        <button :class="{ active: filter == 'all'}"  @click = "filter = 'all'">All</button>
+        <button :class="{ active: filter == 'active'}"  @click = "filter = 'active'">Active</button>
+        <button :class="{ active: filter == 'completed'}" @click = "filter = 'completed'">Completed</button>
       </div>
 
       <div>
@@ -39,11 +37,13 @@
 
 <script>
   import TodoItem from './TodoItem.vue'
+  import TodoItemsRemaining from './TodoItemsRemaining.vue'
 
   export default {
     name: 'todo-list',
     components: {
-      TodoItem
+      TodoItem,
+      TodoItemsRemaining
     },
     data () {
       return {
@@ -91,7 +91,7 @@
       },
 
       completeTodo(data) {
-        const {index, value} = data;
+        const { index, value } = data;
         this.todoList[index].completed = value;
       },
 
@@ -125,6 +125,16 @@
       showClearCompletedBtn() {
         return this.todoList.filter(todo => todo.completed).length > 0
       }
+    },
+
+    mounted() {
+      eventEmitter.$on('removedTodo', (index) => this.removeTodo(index));
+      eventEmitter.$on('completedTodo', (data) => this.completeTodo(data));
+    },
+
+    beforeDestroy() {
+      eventEmitter.$off('removedTodo');
+      eventEmitter.$off('completedTodo');
     }
   }
 </script>

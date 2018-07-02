@@ -7,8 +7,9 @@
      <div v-if="editable" class="text-item">
        <input type="text" v-model="title" v-focus class="edit-input"
               @keyup.enter = "toggleEditableTodo"
-              @keyup.esc="cancelEdit">
+              @keyup.esc = "cancelEdit">
      </div>
+
      <div :class ="{disactive: completed}" class="edit-item" @click = "toggleEditableTodo">
        &#9998;
      </div>
@@ -46,7 +47,7 @@
     },
     methods: {
       removeTodo(index) {
-        this.$emit('removedTodo', index)
+        eventEmitter.$emit('removedTodo', index);
       },
 
       toggleEditableTodo() {
@@ -66,7 +67,7 @@
       },
 
       toggleComplete() {
-        this.$emit('completedTodo', {
+        eventEmitter.$emit('completedTodo', {
           'index': this.index,
           'value': this.completed
         });
@@ -81,7 +82,6 @@
         return value.trim() == ''
       }
     },
-
     directives: {
       focus: {
         inserted: function (el) {
@@ -89,7 +89,6 @@
         }
       }
     },
-
     watch: {
       checkAll() {
         this.completed = this.checkAll
