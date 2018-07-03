@@ -13,20 +13,12 @@
     </transition-group>
 
     <div class="extra-container">
-      <!--<div>
-        <label><input type="checkbox" :checked ="!anyRemaining" @change="checkAllTodos">Check All</label>
-      </div>-->
       <todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
       <todo-items-remaining :remaining="remaining"></todo-items-remaining>
     </div>
 
     <div class="extra-container">
-      <div>
-        <button :class="{ active: filter == 'all'}"  @click = "filter = 'all'">All</button>
-        <button :class="{ active: filter == 'active'}"  @click = "filter = 'active'">Active</button>
-        <button :class="{ active: filter == 'completed'}" @click = "filter = 'completed'">Completed</button>
-      </div>
-
+      <todo-filtered />
       <div>
         <transition name = "fade">
           <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
@@ -40,18 +32,18 @@
   import TodoItem from './TodoItem.vue'
   import TodoItemsRemaining from './TodoItemsRemaining.vue'
   import TodoCheckAll from './TodoCheckAll.vue'
-
+  import TodoFiltered from './TodoFiltered.vue'
   export default {
     name: 'todo-list',
     components: {
       TodoItem,
       TodoItemsRemaining,
-      TodoCheckAll
+      TodoCheckAll,
+      TodoFiltered
     },
     data () {
       return {
         newTodo: '',
-        filter: 'all',
         nextTodoId: 3,
         checkAll: false,
         todoList: [
@@ -67,7 +59,8 @@
             'completed': false,
             'editable': false
           }
-        ]
+        ],
+        filter: 'all'
       }
     },
     methods:  {
@@ -100,7 +93,6 @@
 
       checkAllTodos(checked) {
         this.todoList.forEach(item => item.completed = checked);
-        console.log(this.todoList)
       },
 
       clearCompleted() {
@@ -135,6 +127,7 @@
       eventEmitter.$on('removedTodo', (index) => this.removeTodo(index));
       eventEmitter.$on('completedTodo', (data) => this.completeTodo(data));
       eventEmitter.$on('checkAllChanged', (checked) => this.checkAllTodos(checked));
+      eventEmitter.$on('filterChanged', (filter) => this.filter = filter);
     },
 
     beforeDestroy() {
