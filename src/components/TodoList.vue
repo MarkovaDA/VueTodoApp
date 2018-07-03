@@ -19,11 +19,7 @@
 
     <div class="extra-container">
       <todo-filtered />
-      <div>
-        <transition name = "fade">
-          <button v-if="showClearCompletedBtn" @click="clearCompleted">Delete completed</button>
-        </transition>
-      </div>
+      <todo-clear-completed :showClearCompletedBtn = "showClearCompletedBtn" />
     </div>
   </div>
 </template>
@@ -33,13 +29,15 @@
   import TodoItemsRemaining from './TodoItemsRemaining.vue'
   import TodoCheckAll from './TodoCheckAll.vue'
   import TodoFiltered from './TodoFiltered.vue'
+  import TodoClearCompleted from './TodoClearCompleted.vue'
   export default {
     name: 'todo-list',
     components: {
       TodoItem,
       TodoItemsRemaining,
       TodoCheckAll,
-      TodoFiltered
+      TodoFiltered,
+      TodoClearCompleted
     },
     data () {
       return {
@@ -128,6 +126,7 @@
       eventEmitter.$on('completedTodo', (data) => this.completeTodo(data));
       eventEmitter.$on('checkAllChanged', (checked) => this.checkAllTodos(checked));
       eventEmitter.$on('filterChanged', (filter) => this.filter = filter);
+      eventEmitter.$on('clearCompleted', () => this.clearCompleted())
     },
 
     beforeDestroy() {
