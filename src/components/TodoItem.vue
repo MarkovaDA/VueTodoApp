@@ -1,6 +1,6 @@
 <template>
   <div class="todo-item">
-     <input type="checkbox" v-model="completed" @change="toggleComplete">
+     <input type="checkbox" v-model="completed" @change="switchComplete">
      <div v-if = "!editable" :class="{completed: completed}" class="text-item">
        {{ title }}
      </div>
@@ -20,6 +20,8 @@
 </template>
 
 <script>
+  import { mapMutations } from 'vuex';
+
   export default {
     name: 'todo-item',
     props: {
@@ -46,10 +48,11 @@
       }
     },
     methods: {
-      removeTodo(index) {
-        eventEmitter.$emit('removedTodo', index);
-      },
-
+      ...mapMutations([
+        'toggleComplete',
+        'removeTodo',
+        'editTodo'
+      ]),
       toggleEditableTodo() {
         const current = this;
 
@@ -63,21 +66,23 @@
         } else if (this.isEmpty(current.title)) {
           current.title = this.beforeEditCache;
         }
-        current.editable = !current.editable
-      },
+        current.editable = !current.editable;
 
-      toggleComplete() {
-        eventEmitter.$emit('completedTodo', {
-          'index': this.index,
-          'value': this.completed
-        });
+        this.editTodo({
+          index: this.index,
+          title: current.title
+        })
       },
-
+      switchComplete() {
+        this.toggleComplete({
+          index: this.index,
+          isComplete: event.target.checked
+        })
+      },
       cancelEdit() {
         this.editable = false;
         this.title = this.beforeEditCache;
       },
-
       isEmpty(value) {
         return value.trim() == ''
       }

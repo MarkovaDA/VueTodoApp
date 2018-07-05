@@ -30,6 +30,9 @@
   import TodoCheckAll from './TodoCheckAll.vue'
   import TodoFiltered from './TodoFiltered.vue'
   import TodoClearCompleted from './TodoClearCompleted.vue'
+
+  import { mapGetters, mapState, mapMutations } from 'vuex';
+
   export default {
     name: 'todo-list',
     components: {
@@ -42,23 +45,8 @@
     data () {
       return {
         newTodo: '',
-        nextTodoId: 3,
-        checkAll: false,
-        todoList: [
-          {
-            'id': 1,
-            'title': 'Finish Vue Screencast',
-            'completed': false,
-            'editable': false,
-          },
-          {
-            'id': 2,
-            'title': 'Take over world',
-            'completed': false,
-            'editable': false
-          }
-        ],
-        filter: 'all'
+        nextTodoId: 4,
+        checkAll: false
       }
     },
     methods:  {
@@ -66,72 +54,32 @@
         if (this.newTodo.trim() == '') {
           return;
         }
-
-        this.todoList.push({
+        const newTodoObj = {
           id: this.nextTodoId++,
           title: this.newTodo,
           completed: false,
           editable: false
-        });
+        };
 
+        this.todoList.push(newTodoObj);
+        //подумать, как добавить в массив
         this.newTodo = ''
-      },
-
-      removeTodo(index) {
-        if (this.todoList[index].completed) {
-          return;
-        }
-        this.todoList.splice(index, 1);
-      },
-
-      completeTodo(data) {
-        const { index, value } = data;
-        this.todoList[index].completed = value;
-      },
-
-      checkAllTodos(checked) {
-        this.todoList.forEach(item => item.completed = checked);
-      },
-
-      clearCompleted() {
-        //удалить посещенные
-        this.todoList = this.todoList.filter(todo => !todo.completed);
       }
     },
     computed: {
-      remaining() {
-        return this.todoList.filter(item => !item.completed).length
-      },
-      anyRemaining() {
-        return this.remaining != 0
-      },
-      todosFiltered() {
-        if (this.filter == 'all') {
-          return this.todoList
-        } else if (this.filter == 'active') {
-            return this.todoList.filter(todo => !todo.completed)
-        } else if (this.filter == 'completed') {
-          return this.todoList.filter(todo => todo.completed)
-        }
-        return this.todoList;
-      },
-
-      showClearCompletedBtn() {
-        return this.todoList.filter(todo => todo.completed).length > 0
-      }
-    },
-
-    mounted() {
-      eventEmitter.$on('removedTodo', (index) => this.removeTodo(index));
-      eventEmitter.$on('completedTodo', (data) => this.completeTodo(data));
-      eventEmitter.$on('checkAllChanged', (checked) => this.checkAllTodos(checked));
-      eventEmitter.$on('filterChanged', (filter) => this.filter = filter);
-      eventEmitter.$on('clearCompleted', () => this.clearCompleted())
-    },
-
-    beforeDestroy() {
-      eventEmitter.$off('removedTodo');
-      eventEmitter.$off('completedTodo');
+      ...mapState([
+        'todoList',
+        'filter'
+      ]),
+      ...mapGetters([
+        'remaining',
+        'anyRemaining',
+        'todosFiltered',
+        'showClearCompletedBtn'
+      ]),
+      ...mapMutations([
+        'addNewTodo'
+      ])
     }
   }
 </script>

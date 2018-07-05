@@ -1,10 +1,12 @@
 <template>
   <div>
-    <label><input type="checkbox" :checked ="!anyRemaining" @change="handleAllChecked">Check All</label>
+    <label><input type="checkbox" :checked ="!anyRemaining" @change="toggleCheckAll">Check All</label>
   </div>
 </template>
 
 <script>
+  import { mapMutations } from 'vuex';
+
   export default {
     name: 'todo-check-all',
     props: {
@@ -14,8 +16,11 @@
       }
     },
     methods: {
-      handleAllChecked() {
-        eventEmitter.$emit('checkAllChanged', event.target.checked)
+      ...mapMutations([
+        'checkAll'
+      ]),
+      toggleCheckAll() {
+        this.checkAll(event.target.checked);
       }
     }
   }

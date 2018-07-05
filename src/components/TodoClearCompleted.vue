@@ -1,10 +1,12 @@
 <template>
   <div>
-    <button v-if="showClearCompletedBtn" @click="handleClearCompleted">Delete completed</button>
+    <button v-if="showClearCompletedBtn" @click="deleteCompleted">Delete completed</button>
   </div>
 </template>
 
 <script>
+  import { mapMutations } from 'vuex';
+
   export default {
     name: 'todo-clear-completed',
     props: {
@@ -14,9 +16,9 @@
       }
     },
     methods: {
-      handleClearCompleted() {
-        eventEmitter.$emit('clearCompleted')
-      }
+      ...mapMutations([
+        'deleteCompleted'
+      ])
     }
   }
 </script>
