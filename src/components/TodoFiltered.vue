@@ -16,8 +16,7 @@ export default {
   },
   methods: {
     changeFilter(filter) {
-      this.filter = filter;
-      eventEmitter.$emit('filterChanged', filter)
+      this.$store.state.filter = filter; //работает вот такое прямое изменение фильтра
     }
   }
 }

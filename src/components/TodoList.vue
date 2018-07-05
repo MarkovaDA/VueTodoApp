@@ -31,6 +31,7 @@
   import TodoFiltered from './TodoFiltered.vue'
   import TodoClearCompleted from './TodoClearCompleted.vue'
 
+  import Vue from 'vue'
   import { mapGetters, mapState, mapMutations } from 'vuex';
 
   export default {
@@ -61,8 +62,8 @@
           editable: false
         };
 
-        this.todoList.push(newTodoObj);
-        //подумать, как добавить в массив
+        this.todoList.push(newTodoObj); //в store уже обновляется массив с данными
+
         this.newTodo = ''
       }
     },
